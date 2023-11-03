@@ -1,4 +1,12 @@
 <!-- The word uppercase in the interpolation binding after the pipe | character, activates the built-in UppercasePipe. -->
 <h2>{{hero.name | uppercase}} Details</h2>
 <div><span>id: </span>{{hero.id}}</div>
-<div><span>name: </span>{{hero.name}}</div>
+<div>
+    <label for="name">Hero name: </label>
+    <!-- [(ngModel)] is Angular's two-way data binding syntax. Here it binds the hero.name property to the HTML text box
+    so that data can flow in both directions. Data can flow from the hero.name property to the text box and from #
+    the text box back to the hero.name. 
+    Although ngModel is a valid Angular directive, it isn't available by default.
+    It belongs to the optional FormsModule and you must import it to using it. -->
+    <input id="name "[(ngModel)]="hero.name" placeholder="name">
+</div>
