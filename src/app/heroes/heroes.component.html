@@ -21,15 +21,10 @@
     </li>
 </ul>
 
-<!-- The hero details should only be displayed when a hero is selected. When a component is created initially, there is
-no selected hero. Add the *ngIf directive to the <div> that wraps the hero details. This directive tells Angular
-to render the section only when the selectedHero is defined after it has been selected by clicking on a hero. -->
-<div *ngIf="selectedHero">
-    <!-- The word uppercase in the interpolation binding after the pipe | character, activates the built-in UppercasePipe. -->
-    <h2>{{selectedHero.name | uppercase}} Details</h2>
-    <div>id: {{selectedHero.id}}</div>
-    <div>
-        <label for="hero-name">Hero name: </label>
-        <input id="hero-name" [(ngModel)]="selectedHero.name" placeholder="name">
-    </div>
-</div>
+<!-- The two components have a parent/child relationship. The parent, HeroesComponent, controls the child, 
+HeroDetailComponent by sending it a new hero to display whenever the user selects a hero from the list.
+    
+[hero]="selectedHero" is an Angular property binding.
+It's a one-way data binding from the selectedHero property of the HeroesComponent to the hero property of the target element, 
+which maps to the hero property of the HeroDetailComponent.-->
+<app-hero-detail [hero]="selectedHero"></app-hero-detail>

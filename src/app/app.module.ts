@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { HeroesComponent } from './heroes/heroes.component';
+import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 
 /**
  * Angular needs to know how the pieces of your application fit together and what other files and libraries
@@ -20,7 +21,7 @@ import { HeroesComponent } from './heroes/heroes.component';
      * You didn't declare the HeroesComponent. Why did the application work?
      * It worked because the ng generate declared HeroesComponent in AppModule when it created that component.
      */
-    declarations: [AppComponent, HeroesComponent],
+    declarations: [AppComponent, HeroesComponent, HeroDetailComponent],
     // The imports array contains the list of external modules that the application needs.
     imports: [BrowserModule, FormsModule],
     providers: [],
