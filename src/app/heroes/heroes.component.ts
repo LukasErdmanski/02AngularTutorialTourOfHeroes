@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Hero } from '../hero';
-import { HEROES } from '../mock-heroes';
+import { HeroService } from '../hero.service';
 
 /**
  * You always import the Component symbol from the Angular core library and annotate the component class with @Component.
@@ -26,12 +26,40 @@ import { HEROES } from '../mock-heroes';
 })
 // Always export the component class so you can import it elsewhere … like in the AppModule.
 export class HeroesComponent {
-    heroes = HEROES;
+    heroes: Hero[] = [];
     /**
      * 'selectedHero' is not assigned to any value since there is no selected hero when the application starts.
      * So it is initially undefined.
      */
     selectedHero?: Hero | undefined;
+
+    /**
+     * The parameter simultaneously defines a private heroService property and identifies it as a HeroService injection site.
+     * When Angular creates a HeroesComponent, the Dependency Injection system sets the heroService parameter
+     * to the singleton instance of HeroService.
+     */
+    constructor(private heroService: HeroService) {}
+
+    /**
+     * While you could call getHeroes() in the constructor, that's not the best practice.
+     *
+     * Reserve the constructor for minimal initialization such as wiring constructor parameters to properties.
+     * The constructor shouldn't do anything. It certainly shouldn't call a function that makes HTTP requests
+     * to a remote server as a real data service would.
+     *
+     * Instead, call getHeroes() inside the ngOnInit lifecycle hook and let Angular call ngOnInit()
+     * at an appropriate time after constructing a HeroesComponent instance.
+     */
+    ngOnInit() {
+        this.getHeroes();
+    }
+
+    /**
+     * Retrieves the heroes from the service.
+     */
+    getHeroes(): void {
+        this.heroes = this.heroService.getHeroes();
+    }
 
     onSelect(hero: Hero): void {
         this.selectedHero = hero;

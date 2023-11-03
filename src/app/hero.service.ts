@@ -20,8 +20,26 @@ import { HEROES } from './mock-heroes';
  *
  * The @Injectable() decorator accepts a metadata object for the service, the same way the @Component() decorator did
  * for your component classes.
+ *
+ * You must make the HeroService available to the dependency injection system before Angular can inject it into
+ * the HeroesComponent by registering a provider. A provider is something that can create or deliver a service.
+ * In this case, it instantiates the HeroService class to provide the service.
+ *
+ * To make sure that the HeroService can provide this service, register it with the injector. The injector is
+ * the object that chooses and injects the provider where the application requires it.
+ *
+ * By default, ng generate service registers a provider with the root injector for your service by including
+ * provider metadata, that's providedIn: 'root' in the @Injectable() decorator.
+ *
+ * When you provide the service at the root level, Angular creates a single, shared instance of HeroService and
+ * injectsinto any class that asks for it. Registering the provider in the @Injectable metadata also allows Angular
+ * to optimize an application by removing the service if it isn't used.
  */
 @Injectable({
+    /**
+     * By default, this decorator has a providedIn property, which creates a provider for the service. In this case,
+     * providedIn: 'root' specifies that Angular should provide the service in the root injector.
+     */
     providedIn: 'root',
 })
 export class HeroService {
@@ -35,7 +53,7 @@ export class HeroService {
      *
      * The implementation in this tutorial continues to deliver mock heroes.
      */
-    getHeores(): Hero[] {
+    getHeroes(): Hero[] {
         return HEROES;
     }
 }
