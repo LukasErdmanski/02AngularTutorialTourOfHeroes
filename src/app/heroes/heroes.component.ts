@@ -27,4 +27,13 @@ import { HEROES } from '../mock-heroes';
 // Always export the component class so you can import it elsewhere … like in the AppModule.
 export class HeroesComponent {
     heroes = HEROES;
+    /**
+     * 'selectedHero' is not assigned to any value since there is no selected hero when the application starts.
+     * So it is initially undefined.
+     */
+    selectedHero?: Hero | undefined;
+
+    onSelect(hero: Hero): void {
+        this.selectedHero = hero;
+    }
 }

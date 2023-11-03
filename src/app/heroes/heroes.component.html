@@ -1,4 +1,5 @@
 <h2>My Heroes</h2>
+
 <ul class="heroes">
     <!-- The *ngFor is Angular's repeater directive. It repeats the host element for each element in a list.
     Syntax     Details
@@ -6,9 +7,29 @@
     heroes	   Holds the mock heroes list from the HeroesComponent class, the mock heroes list.
     hero	   Holds the current hero object for each iteration through the list. -->
     <li *ngFor="let hero of heroes">
-        <button type="button">
+        <!-- Angular's class binding can add and remove a CSS class conditionally. 
+        Add [class.some-css-class]="some-condition" to the element you want to style.
+        When the current row hero is the same as the selectedHero, Angular adds the selected CSS class. 
+        When the two heroes are different, Angular removes the class.
+        
+        The parentheses around click tell Angular to listen for the <button> element's click event. 
+        When the user clicks in the <button>, Angular executes the onSelect(hero) expression. -->
+        <button [class.selected]="hero === selectedHero" type="button" (click)="onSelect(hero)">
             <span class="badge">{{hero.id}}</span>
             <span class="name">{{hero.name}}</span>
         </button>
     </li>
 </ul>
+
+<!-- The hero details should only be displayed when a hero is selected. When a component is created initially, there is
+no selected hero. Add the *ngIf directive to the <div> that wraps the hero details. This directive tells Angular
+to render the section only when the selectedHero is defined after it has been selected by clicking on a hero. -->
+<div *ngIf="selectedHero">
+    <!-- The word uppercase in the interpolation binding after the pipe | character, activates the built-in UppercasePipe. -->
+    <h2>{{selectedHero.name | uppercase}} Details</h2>
+    <div>id: {{selectedHero.id}}</div>
+    <div>
+        <label for="hero-name">Hero name: </label>
+        <input id="hero-name" [(ngModel)]="selectedHero.name" placeholder="name">
+    </div>
+</div>
