@@ -1,12 +1,14 @@
-<!-- The word uppercase in the interpolation binding after the pipe | character, activates the built-in UppercasePipe. -->
-<h2>{{hero.name | uppercase}} Details</h2>
-<div><span>id: </span>{{hero.id}}</div>
-<div>
-    <label for="name">Hero name: </label>
-    <!-- [(ngModel)] is Angular's two-way data binding syntax. Here it binds the hero.name property to the HTML text box
-    so that data can flow in both directions. Data can flow from the hero.name property to the text box and from #
-    the text box back to the hero.name. 
-    Although ngModel is a valid Angular directive, it isn't available by default.
-    It belongs to the optional FormsModule and you must import it to using it. -->
-    <input id="name "[(ngModel)]="hero.name" placeholder="name">
-</div>
+<h2>My Heroes</h2>
+<ul>
+    <!-- The *ngFor is Angular's repeater directive. It repeats the host element for each element in a list.
+    Syntax     Details
+    <li>	   The host element.
+    heroes	   Holds the mock heroes list from the HeroesComponent class, the mock heroes list.
+    hero	   Holds the current hero object for each iteration through the list. -->
+    <li *ngFor="let hero of heroes">
+        <button type="buttom">
+            <span class="badge">{{hero.id}}</span>
+            <span class="name">{{hero.name}}</span>
+        </button>
+    </li>
+</ul>
