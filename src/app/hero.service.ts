@@ -11,6 +11,7 @@
 import { Injectable } from '@angular/core';
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
+import { Observable, of } from 'rxjs';
 
 /**
  * This service imports the Angular Injectable symbol and annotates the class with the @Injectable() decorator.
@@ -53,7 +54,14 @@ export class HeroService {
      *
      * The implementation in this tutorial continues to deliver mock heroes.
      */
-    getHeroes(): Hero[] {
-        return HEROES;
+    getHeroes(): Observable<Hero[]> {
+        /**
+         * This tutorial simulates getting data from the server with the RxJS of() function
+         * of(HEROES) returns an Observable<Hero[]> that emits a single value, the array of mock heroes.
+         * 
+         * https://rxjs.dev/api/index/function/of
+         */
+        const heroes: Observable<Hero[]> = of(HEROES);
+        return heroes;
     }
 }
