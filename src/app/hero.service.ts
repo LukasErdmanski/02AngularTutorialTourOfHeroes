@@ -12,6 +12,7 @@ import { Injectable } from '@angular/core';
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
 import { Observable, of } from 'rxjs';
+import { MessageService } from './message.service';
 
 /**
  * This service imports the Angular Injectable symbol and annotates the class with the @Injectable() decorator.
@@ -44,7 +45,14 @@ import { Observable, of } from 'rxjs';
     providedIn: 'root',
 })
 export class HeroService {
-    constructor() {}
+    /**
+     * A parameter declares a private messageService property. Angular injects the singleton MessageService into
+     * that property when it creates the HeroService.
+     * 
+     * This is an example of a typical service-in-service scenario in which you inject the MessageService into 
+     * the HeroService which is injected into the HeroesComponent.
+     */
+    constructor(private messageService: MessageService) {}
 
     /**
      * The HeroService could get hero data from anywhere such as a web service, local storage, or a mock data source.
@@ -62,6 +70,8 @@ export class HeroService {
          * https://rxjs.dev/api/index/function/of
          */
         const heroes: Observable<Hero[]> = of(HEROES);
+        // Send a message when the heroes are fetched.
+        this.messageService.add('HeroService: fetched heroes')
         return heroes;
     }
 }
