@@ -12,4 +12,7 @@ to render the section only when the selectedHero is defined after it has been se
         <input id="hero-name" [(ngModel)]="hero.name" placeholder="name">
     </div>
     
+    <!-- By clicking the browser's back button, you can go back to the previous page. This could be the hero list or 
+    dashboard view, depending upon which sent you to the detail view. -->
+    <button type="button" (click)="goBack()">go back</button>
 </div>

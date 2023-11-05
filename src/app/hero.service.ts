@@ -73,4 +73,19 @@ export class HeroService {
         this.messageService.add('HeroService: fetched heroes')
         return heroes;
     }
+
+    /**
+     * Like getHeroes(), getHero() has an asynchronous signature. It returns a mock hero as an Observable,
+     * using the RxJS of() function.
+     * 
+     * You can rewrite getHero() as a real Http request without having to change the HeroDetailComponent that calls it.
+     */
+    getHero(id:Number): Observable<Hero> {
+        // For now, assume that a hero with the specified `id` always exists.
+        // Error handling will be added in the next step of the tutorial.
+        const hero = HEROES.find(h => h.id === id)!;
+        // The backtick ( ` ) characters define a JavaScript template literal for embedding the id.
+        this.messageService.add(`HeroService: fetched hero id=${id}}`);
+        return of(hero)
+    }
 }
