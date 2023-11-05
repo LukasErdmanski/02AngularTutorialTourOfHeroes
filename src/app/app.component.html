@@ -1,6 +1,14 @@
 <!-- The double curly braces are Angular's interpolation binding syntax. This interpolation binding presents
 the component's title property value inside the HTML header tag -->
 <h1>{{title}}</h1>
+
+<!--  routerLink attribute is set to "/heroes", the string that the router matches to the route to HeroesComponent.
+The routerLink is the selector for the RouterLink directive that turns user clicks into router navigations. It's another
+ of the public directives in the RouterModule. -->
+<nav>
+    <a routerLink="/heroes">Heroes</a>
+</nav>
+
 <!-- The <router-outlet> tells the router where to display routed views. 
     
 The RouterOutlet is one of the router directives that became available to the AppComponent because AppModule imports
