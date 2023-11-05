@@ -6,6 +6,7 @@ the component's title property value inside the HTML header tag -->
 The routerLink is the selector for the RouterLink directive that turns user clicks into router navigations. It's another
  of the public directives in the RouterModule. -->
 <nav>
+    <a routerLink="/dashboard">Dashboard</a>
     <a routerLink="/heroes">Heroes</a>
 </nav>
 
@@ -16,4 +17,5 @@ AppRoutingModule which exported RouterModule. The ng generate command you ran at
 this import because of the --module=app flag. If you didn't use the ng generate command to create app-routing.module.ts,
 import AppRoutingModule into app.module.ts and add it to the imports array of the NgModule.-->
 <router-outlet></router-outlet>
+
 <app-message></app-message>

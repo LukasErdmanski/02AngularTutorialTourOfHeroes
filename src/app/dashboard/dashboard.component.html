@@ -1,0 +1,7 @@
+<h2>Top Heroes</h2>
+<div class="heroes-menu">
+    <!-- The *ngFor repeater creates as many links as are in the component's heroes array. -->
+    <a *ngFor="let hero of heroes">
+        {{hero.name}}
+    </a>
+</div>

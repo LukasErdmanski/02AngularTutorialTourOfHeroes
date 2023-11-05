@@ -16,10 +16,8 @@ import { NgModule } from '@angular/core';
  * import, HeroesComponent, gives the Router somewhere to go once you configure the routes.
 */
 import { RouterModule, Routes } from '@angular/router';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeroesComponent } from './heroes/heroes.component';
-
-
-// 
 
 /**
  * Routes tell the Router which view to display when a user clicks a link or pastes a URL into the browser address bar.
@@ -29,7 +27,15 @@ import { HeroesComponent } from './heroes/heroes.component';
  * - component:	     The component that the router should create when navigating to this route.
  */
 const routes: Routes = [
-  { path: 'heroes', component: HeroesComponent }
+  /**
+   * When the application starts, the browser's address bar points to the web site's root. The application navigates to
+   * the dashboard automatically.
+   * This route redirects a URL that fully matches the empty path to the route whose path is '/dashboard'.
+   * After the browser refreshes, the router loads the DashboardComponent and the browser address bar shows the /dashboard URL.
+   */
+  { path: '', redirectTo:'/dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'heroes', component: HeroesComponent },
 ];
 
 // The @NgModule metadata initializes the router and starts it listening for browser location changes.
