@@ -18,7 +18,6 @@ import { MessageService } from './message.service';
  * This service imports the Angular Injectable symbol and annotates the class with the @Injectable() decorator.
  * This marks the class as one that participates in the dependency injection system.
  * The HeroService class is going to provide an injectable service, and it can also have its own injected dependencies.
- * It doesn't have any dependencies yet.
  *
  * The @Injectable() decorator accepts a metadata object for the service, the same way the @Component() decorator did
  * for your component classes.
@@ -34,7 +33,7 @@ import { MessageService } from './message.service';
  * provider metadata, that's providedIn: 'root' in the @Injectable() decorator.
  *
  * When you provide the service at the root level, Angular creates a single, shared instance of HeroService and
- * injectsinto any class that asks for it. Registering the provider in the @Injectable metadata also allows Angular
+ * injects into any class that asks for it. Registering the provider in the @Injectable metadata also allows Angular
  * to optimize an application by removing the service if it isn't used.
  */
 @Injectable({

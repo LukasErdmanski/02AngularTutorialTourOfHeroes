@@ -25,7 +25,9 @@ import { MessageComponent } from './message/message.component';
     declarations: [AppComponent, HeroesComponent, HeroDetailComponent, MessageComponent],
     // The imports array contains the list of external modules that the application needs.
     imports: [BrowserModule, FormsModule],
-    providers: [],
+    providers: [ 
+        // No need to place any providers due to the `providedIn` flag in the @Injectable symbol, e.g. in HeroesServvice or MessageService.
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
