@@ -7,24 +7,8 @@
     heroes	   Holds the mock heroes list from the HeroesComponent class, the mock heroes list.
     hero	   Holds the current hero object for each iteration through the list. -->
     <li *ngFor="let hero of heroes">
-        <!-- Angular's class binding can add and remove a CSS class conditionally. 
-        Add [class.some-css-class]="some-condition" to the element you want to style.
-        When the current row hero is the same as the selectedHero, Angular adds the selected CSS class. 
-        When the two heroes are different, Angular removes the class.
-        
-        The parentheses around click tell Angular to listen for the <button> element's click event. 
-        When the user clicks in the <button>, Angular executes the onSelect(hero) expression. -->
-        <button [class.selected]="hero === selectedHero" type="button" (click)="onSelect(hero)">
-            <span class="badge">{{hero.id}}</span>
-            <span class="name">{{hero.name}}</span>
-        </button>
+        <a routerLink="/detail/{{hero.id}}">
+            <span class="badge">{{hero.id}}</span>{{hero.name}}
+        </a>
     </li>
 </ul>
-
-<!-- The two components have a parent/child relationship. The parent, HeroesComponent, controls the child, 
-HeroDetailComponent by sending it a new hero to display whenever the user selects a hero from the list.
-    
-[hero]="selectedHero" is an Angular property binding.
-It's a one-way data binding from the selectedHero property of the HeroesComponent to the hero property of the target element, 
-which maps to the hero property of the HeroDetailComponent.-->
-<app-hero-detail [hero]="selectedHero"></app-hero-detail>

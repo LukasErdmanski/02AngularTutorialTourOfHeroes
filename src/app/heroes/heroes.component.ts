@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
-import { MessageService } from '../message.service';
 
 /**
  * You always import the Component symbol from the Angular core library and annotate the component class with @Component.
@@ -27,22 +26,14 @@ import { MessageService } from '../message.service';
 })
 // Always export the component class so you can import it elsewhere … like in the AppModule.
 export class HeroesComponent {
-    /**
-     * 'selectedHero' is not assigned to any value since there is no selected hero when the application starts.
-     * So it is initially undefined.
-    */
-   selectedHero?: Hero | undefined;
-   
    heroes: Hero[] = [];
 
     /**
      * The parameter simultaneously defines a private heroService property and identifies it as a HeroService injection site.
      * When Angular creates a HeroesComponent, the Dependency Injection system sets the heroService parameter
      * to the singleton instance of HeroService.
-     * 
-     *  Injesected the MessageService to create and display a history of each time the user clicks on a hero.
      */
-    constructor(private heroService: HeroService, private messageService: MessageService) {}
+    constructor(private heroService: HeroService) {}
 
     /**
      * While you could call getHeroes() in the constructor, that's not the best practice.
@@ -75,11 +66,5 @@ export class HeroesComponent {
     getHeroes(): void {
         this.heroService.getHeroes()
         .subscribe(heroes => this.heroes = heroes);
-    }
-
-    onSelect(hero: Hero): void {
-        this.selectedHero = hero;
-        // Each time you click a hero, a new message appears in the MessageComponent to record the selection.
-        this.messageService.add(`HeroesComponent: Selected hero id=${hero.id}`);
     }
 }
