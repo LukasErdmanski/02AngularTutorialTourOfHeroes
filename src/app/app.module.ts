@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { HeroesComponent } from './heroes/heroes.component';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { MessageComponent } from './message/message.component';
+import { AppRoutingModule } from './app-routing.module';
 
 /**
  * Angular needs to know how the pieces of your application fit together and what other files and libraries
@@ -24,7 +25,7 @@ import { MessageComponent } from './message/message.component';
      */
     declarations: [AppComponent, HeroesComponent, HeroDetailComponent, MessageComponent],
     // The imports array contains the list of external modules that the application needs.
-    imports: [BrowserModule, FormsModule],
+    imports: [BrowserModule, FormsModule, AppRoutingModule],
     providers: [ 
         // No need to place any providers due to the `providedIn` flag in the @Injectable symbol, e.g. in HeroesServvice or MessageService.
     ],
