@@ -15,4 +15,10 @@ to render the section only when the selectedHero is defined after it has been se
     <!-- By clicking the browser's back button, you can go back to the previous page. This could be the hero list or 
     dashboard view, depending upon which sent you to the detail view. -->
     <button type="button" (click)="goBack()">go back</button>
+
+    <!-- You can edit a hero's name. As you type, the hero name updates the heading at the top of the page, yet when
+    you click Go back, your changes are lost.
+    To persist changes, you must write them back to the server with a click event binding that invokes a component
+    method named save(). -->
+    <button type="button" (click)="save()">save</button>
 </div>

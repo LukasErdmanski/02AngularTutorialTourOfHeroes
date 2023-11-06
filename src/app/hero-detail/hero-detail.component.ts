@@ -1,7 +1,7 @@
 /**
  * The router creates the HeroDetailComponent in response to a URL such as ~/detail/12.
- * 
- * The HeroDetailComponent needs a new way to get the hero to display. Is does it in the follwing way: 
+ *
+ * The HeroDetailComponent needs a new way to get the hero to display. Is does it in the follwing way:
  * - Get the route that created it
  * - Extract the id from the route
  * - Get the hero with that id from the server using the HeroService
@@ -41,29 +41,37 @@ export class HeroDetailComponent {
         private location: Location
     ) {}
 
-        ngOnInit():void {
-            this.getHero();
-        }
+    ngOnInit(): void {
+        this.getHero();
+    }
 
-        getHero(): void {
-            /**
-             * The route.snapshot is a static image of the route information shortly after the component was created.
-             * 
-             * The paramMap is a dictionary of route parameter values extracted from the URL. The "id" key returns the id
-             * of the hero to fetch.
-             * 
-             * Route parameters are always strings. The JavaScript Number function converts the string to a number, 
-             * which is what a hero id should be.
-             */
-            const id = Number(this.route.snapshot.paramMap.get('id'));
-            this.heroService.getHero(id).
-                subscribe(hero => this.hero = hero);
-        }
-
+    getHero(): void {
         /**
-         * Navigates backward one step in the browser's history stack using the Location service is injected here.
+         * The route.snapshot is a static image of the route information shortly after the component was created.
+         *
+         * The paramMap is a dictionary of route parameter values extracted from the URL. The "id" key returns the id
+         * of the hero to fetch.
+         *
+         * Route parameters are always strings. The JavaScript Number function converts the string to a number,
+         * which is what a hero id should be.
          */
-        goBack(): void {
-            this.location.back();
+        const id = Number(this.route.snapshot.paramMap.get('id'));
+        this.heroService.getHero(id).subscribe((hero) => (this.hero = hero));
+    }
+
+    /**
+     * Navigates backward one step in the browser's history stack using the Location service is injected here.
+     */
+    goBack(): void {
+        this.location.back();
+    }
+
+    /**
+     * Persists hero name changes using the hero service updateHero() method and then navigates back to the previous view.
+     */
+    save(): void {
+        if (this.hero) {
+            this.heroService.updateHero(this.hero).subscribe(() => this.goBack());
         }
+    }
 }

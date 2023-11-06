@@ -52,6 +52,14 @@ export class HeroService {
     private heroesUrl = 'api/heroes'; // URL to web ap
 
     /**
+     * `httpOptions` defines headers to be sent with each request. Here, 'Content-Type': 'application/json'
+     * specifies that the request body will be formatted as JSON. This object is used in HTTP method calls.
+     */
+    httpOptions = {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+
+    /**
      * A parameter declares a private messageService property. Angular injects the singleton MessageService into
      * that property when it creates the HeroService.
      *
@@ -205,6 +213,39 @@ export class HeroService {
             tap((_) => this.log(`fetche hero id`)),
             // The optonal parameter result of the handleError() method is undefined in this case.
             catchError(this.handleError<Hero>(`getHero id=${id}`))
+        );
+    }
+
+    /**
+     * PUT: update the hero on the server
+     *
+     * The structure of the updateHero() method is like that of getHeroes(), but it uses http.put() to persist
+     * the changed hero on the server.
+     *
+     * Observable<any> is chosen instead of Observable<Hero> to allow for a more flexible data return type
+     * from the server. The server might provide a broader payload than just the hero's data on updates.
+     */
+    updateHero(hero: Hero): Observable<any> {
+        /**
+         * The HttpClient.put() method takes three parameters:
+         * - The URL
+         * - The data to update, which is the modified hero in this case
+         * - Options
+         *
+         * The URL is unchanged. The heroes web API knows which hero to update by looking at the hero's id.
+         *
+         * The heroes web API expects a special header in HTTP save requests. That header is in the httpOptions constant
+         * defined in the HeroService.
+         *
+         * Using Observable<any> allows us to accept various types of responses from the server
+         * which might not strictly conform to the Hero model, including messages or status codes.
+         *
+         * By specifying 'body: any', we do not limit the HTTP body to Hero type, catering for
+         * scnarios where the server might return additional information that isn't part of the Hero model.
+         */
+        return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
+            tap((_) => this.log(`updated hero id=${hero.id}`)),
+            catchError(this.handleError<any>('updateHero'))
         );
     }
 
