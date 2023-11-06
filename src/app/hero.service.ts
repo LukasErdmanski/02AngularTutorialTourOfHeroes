@@ -13,6 +13,7 @@ import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
 import { Observable, of } from 'rxjs';
 import { MessageService } from './message.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 /**
  * This service imports the Angular Injectable symbol and annotates the class with the @Injectable() decorator.
@@ -45,13 +46,21 @@ import { MessageService } from './message.service';
 })
 export class HeroService {
     /**
+     * The heroesUrl of the form :base/:collectionName with the address of the heroes resource on the server. Here base
+     * is the resource to which requests are made, and collectionName is the heroes data object in the in-memory-data-service.ts
+     */
+    private heroesUrl = 'api/heroes'; // URL to web ap
+
+    /**
      * A parameter declares a private messageService property. Angular injects the singleton MessageService into
      * that property when it creates the HeroService.
-     * 
-     * This is an example of a typical service-in-service scenario in which you inject the MessageService into 
+     *
+     * This is an example of a typical service-in-service scenario in which you inject the MessageService into
      * the HeroService which is injected into the HeroesComponent.
+     *
+     * HttpClient is injected in constructor to add HeroService the ability to create Http request and get Http respones.
      */
-    constructor(private messageService: MessageService) {}
+    constructor(private http: HttpClient, private messageService: MessageService) {}
 
     /**
      * The HeroService could get hero data from anywhere such as a web service, local storage, or a mock data source.
@@ -59,33 +68,47 @@ export class HeroService {
      * Removing data access from components means you can change your mind about the implementation anytime,
      * without touching any components.
      *
-     * The implementation in this tutorial continues to deliver mock heroes.
+     * of() has beed swapped for http.get() and the application keeps working without any other changes because both
+     * functions return an Observable<Hero[]>.
+     *
+     * GET heroes from the server
      */
     getHeroes(): Observable<Hero[]> {
-        /**
-         * This tutorial simulates getting data from the server with the RxJS of() function
-         * of(HEROES) returns an Observable<Hero[]> that emits a single value, the array of mock heroes.
-         * 
-         * https://rxjs.dev/api/index/function/of
-         */
-        const heroes: Observable<Hero[]> = of(HEROES);
-        // Send a message when the heroes are fetched.
-        this.messageService.add('HeroService: fetched heroes')
-        return heroes;
+        // Between <> of the get() method, you specify the type of data received in the http response.
+        return this.http.get<Hero[]>(this.heroesUrl);
     }
+
+    // The old implementation in this tutorial with delivering mock heroes.
+    // getHeroes(): Observable<Hero[]> {
+    //     /**
+    //      * This tutorial simulates getting data from the server with the RxJS of() function
+    //      * of(HEROES) returns an Observable<Hero[]> that emits a single value, the array of mock heroes.
+    //      *
+    //      * https://rxjs.dev/api/index/function/of
+    //      */
+    //     const heroes: Observable<Hero[]> = of(HEROES);
+    //     // Send a message when the heroes are fetched.
+    //     this.messageService.add('HeroService: fetched heroes');
+    //     return heroes;
+    // }
 
     /**
      * Like getHeroes(), getHero() has an asynchronous signature. It returns a mock hero as an Observable,
      * using the RxJS of() function.
-     * 
+     *
      * You can rewrite getHero() as a real Http request without having to change the HeroDetailComponent that calls it.
      */
-    getHero(id:Number): Observable<Hero> {
+    getHero(id: Number): Observable<Hero> {
         // For now, assume that a hero with the specified `id` always exists.
         // Error handling will be added in the next step of the tutorial.
-        const hero = HEROES.find(h => h.id === id)!;
+        const hero = HEROES.find((h) => h.id === id)!;
         // The backtick ( ` ) characters define a JavaScript template literal for embedding the id.
         this.messageService.add(`HeroService: fetched hero id=${id}}`);
-        return of(hero)
+        return of(hero);
+    }
+
+    /** Log a HeroService message with the MessageService */
+    private log(message: string) {
+        this.messageService.add(`HeroService: ${message}`);
     }
 }
