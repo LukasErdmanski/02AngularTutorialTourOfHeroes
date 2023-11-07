@@ -1,5 +1,16 @@
 <h2>My Heroes</h2>
 
+<!-- To add a hero, this application only needs the hero's name. An <input> element is paired for that with an add button. -->
+<div>
+    <label for="new-hero">Hero name: </label>
+    <input id="new-hero" #heroName />
+  
+    <!-- (click) passes input value to add() and then clears the input -->
+    <button type="button" class="add-button" (click)="add(heroName.value); heroName.value=''">
+      Add hero
+    </button>
+</div>
+
 <ul class="heroes">
     <!-- The *ngFor is Angular's repeater directive. It repeats the host element for each element in a list.
     Syntax     Details
@@ -8,7 +19,7 @@
     hero	   Holds the current hero object for each iteration through the list. -->
     <li *ngFor="let hero of heroes">
         <a routerLink="/detail/{{hero.id}}">
-            <span class="badge">{{hero.id}}</span>{{hero.name}}
+          <span class="badge">{{hero.id}}</span> {{hero.name}}
         </a>
     </li>
 </ul>

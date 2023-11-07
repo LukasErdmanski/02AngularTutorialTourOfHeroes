@@ -323,6 +323,24 @@ export class HeroService {
         );
     }
 
+    /**
+     * POST: add a new hero to the server
+     *
+     * addHero() differs from updateHero() in two ways:
+     *
+     * - It calls HttpClient.post() instead of put()
+     * - It expects the server to create an id for the new hero, which it returns in the Observable<Hero> to the caller.
+     * The creating of a id for the new hero happends automatically due to the getId() method of the in-memory-data
+     * service, executed when the POST request (adding a new hero) is send to the simulated server. The server responds
+     * with the new created hero, which has also the automaticly created id for it and was pushed to the heroes database.
+     */
+    addHero(hero: Hero): Observable<Hero> {
+        return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
+            tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
+            catchError(this.handleError<Hero>('addHero'))
+        );
+    }
+
     // The old implementation in this tutorial with delivering the hero by id via the mock heroes.
     // /**
     //  * Like getHeroes(), getHero() has an asynchronous signature. It returns a mock hero as an Observable,
