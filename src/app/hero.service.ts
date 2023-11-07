@@ -330,7 +330,7 @@ export class HeroService {
      *
      * - It calls HttpClient.post() instead of put()
      * - It expects the server to create an id for the new hero, which it returns in the Observable<Hero> to the caller.
-     * 
+     *
      * It relies on the in-memory-data service's genId() method to automatically generate an
      * id for a new hero, if the posted hero object doesn't have one. This id generation is
      * triggered when a POST request is sent to the simulated server. The server then
