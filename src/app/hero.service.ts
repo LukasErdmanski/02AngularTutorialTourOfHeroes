@@ -344,6 +344,24 @@ export class HeroService {
         );
     }
 
+    /**
+     * DELETE: delete the hero from the server
+     *
+     * Notice the following key points:
+     * - deleteHero() calls HttpClient.delete()
+     * - The URL is the heroes resource URL plus the id of the hero to delete
+     * - You don't send data as you did with put() and post()
+     * -You still send the httpOptions
+     */
+    deleteHero(id: number): Observable<Hero> {
+        const url = `${this.heroesUrl}/${id}`;
+
+        return this.http.delete<Hero>(url, this.httpOptions).pipe(
+            tap((_) => this.log(`deleted hero id=${id}`)),
+            catchError(this.handleError<Hero>('deleteHero'))
+        );
+    }
+
     // The old implementation in this tutorial with delivering the hero by id via the mock heroes.
     // /**
     //  * Like getHeroes(), getHero() has an asynchronous signature. It returns a mock hero as an Observable,
