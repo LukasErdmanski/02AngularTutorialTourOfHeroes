@@ -16,6 +16,19 @@ import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 /**
+ * The `HttpOptions` interface defines the structure for HTTP request options used in Angular
+ * HttpClient requests. It's designed to ensure that the request configurations such as headers
+ * are consistent and typed. This interface specifically requires an HttpHeaders object,
+ * allowing for detailed configuration of the request headers - essential for operations like
+ * setting the 'Content-Type'. By using this interface, developers can take advantage of
+ * TypeScript's static typing for HTTP configuration, which can help prevent errors by ensuring
+ * that the correct structure is used for HttpClient options throughout the application.
+ */
+interface HttpOptions {
+    headers: HttpHeaders;
+}
+
+/**
  * This service imports the Angular Injectable symbol and annotates the class with the @Injectable() decorator.
  * This marks the class as one that participates in the dependency injection system.
  * The HeroService class is going to provide an injectable service, and it can also have its own injected dependencies.
@@ -52,10 +65,39 @@ export class HeroService {
     private heroesUrl = 'api/heroes'; // URL to web ap
 
     /**
-     * `httpOptions` defines headers to be sent with each request. Here, 'Content-Type': 'application/json'
-     * specifies that the request body will be formatted as JSON. This object is used in HTTP method calls.
+     * `httpOptions` is an object containing headers and other options for HTTP requests.
+     * It is used to specify headers and other details in HTTP methods like `http.put`.
+     *
+     * 1. Purpose of `httpOptions`:
+     *    - Provides a way to accompany HTTP requests with additional options such as headers.
+     *
+     * 2. Type of `httpOptions`:
+     *    - Typically `{ headers: HttpHeaders }`, can include more fields based on the request.
+     *
+     * 3. Forming `headers`:
+     *    - HTTP headers are crucial for carrying extra information alongside requests and
+     *      responses outside the message body.
+     *
+     * 4. Role of `HttpHeaders`:
+     *    - An Angular class for constructing HTTP request headers to set values like
+     *      'Content-Type' and authorization info.
+     *
+     * 5. About `Content-Type` header:
+     *    - A standard HTTP header indicating the type of data the client is sending in the request,
+     *      part of MIME type, guiding server on how to process request body.
+     *
+     * 6. Explanation of `application/json`:
+     *    - Specifies data format as JSON, informing the server to treat the data as a JSON object.
+     *      The 'application/' part is a broad MIME type category indicating an internet application.
+     *
+     * 7. Alternatives to `application/json`:
+     *    - Other formats like `text/html` for HTML data, `application/xml` for XML, etc., can be used
+     *      depending on what the server expects or the application needs.
+     *
+     * Using `httpOptions` with `Content-Type` as `application/json` is common for JSON data exchange
+     * in RESTful APIs, facilitating the standardization of communications over the web.
      */
-    httpOptions = {
+    httpOptions: HttpOptions = {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
@@ -221,9 +263,47 @@ export class HeroService {
      *
      * The structure of the updateHero() method is like that of getHeroes(), but it uses http.put() to persist
      * the changed hero on the server.
+     * In Angular's HttpClient methods, data sent to or received from a server can be typed with a
+     * generic parameter. This provides type safety when handling the response or request.
      *
-     * Observable<any> is chosen instead of Observable<Hero> to allow for a more flexible data return type
-     * from the server. The server might provide a broader payload than just the hero's data on updates.
+     * Difference between using `Hero` and `any`:
+     * - With `Hero`: Using `Observable<Hero>` or `Observable<Hero[]>` informs the TypeScript
+     *   compiler and IDE that a `Hero` object or array is expected. This enables auto-completion,
+     *   type-checking, and compile-time error reporting if the data received doesn't match the
+     *   `Hero` model.
+     *
+     * - With `any`: `Observable<any>` indicates willingness to accept any data as response. This
+     *   sacrifices type safety by telling the compiler that the response could be of any shape.
+     *   This is useful when the response shape is variable or when processing data not defined
+     *   within the `Hero` model.
+     *
+     * Why `any` for updates but not for gets?
+     * - For retrieving data (`getHero` or `getHeroes`): One usually knows the exact data structure
+     *   returned by the server, i.e., Hero objects or a list thereof, hence `Hero` or `Hero[]` is
+     *   specified to leverage type safety.
+     *
+     * - For updating data (`updateHero`): The server might respond with confirmations, error messages,
+     *   or additional data not present in the `Hero` model. In this case, `any` is used for flexibility
+     *   to handle any type of response.
+     *
+     * What if `Hero` is always used?
+     * - If `Observable<Hero>` is used for updates, and the server responds with data not matching the
+     *   `Hero` type, TypeScript will produce an error due to the mismatched type expectation.
+     *
+     * Advantages and Disadvantages:
+     * - Advantages of `Hero`: More type safety and better tooling support.
+     * - Disadvantages of `Hero`: Less flexibility in handling server responses not matching the `Hero`
+     *   type.
+     * - Advantages of `any`: Flexibility in handling various response types.
+     * - Disadvantages of `any`: Loss of type safety and potential TypeScript compiler checks.
+     *
+     * Recommendation:
+     * - Specific types should be used when certain of the response's conformity to those types for
+     *   type safety. When the response could vary or when expecting additional data not in the model,
+     *   `any` may be a better choice.
+     *
+     * In Angular's "Tour of Heroes" tutorial, `any` is used to handle responses for update operations
+     * as a common practice allowing flexible handling of various possible server responses.
      */
     updateHero(hero: Hero): Observable<any> {
         /**
@@ -236,12 +316,6 @@ export class HeroService {
          *
          * The heroes web API expects a special header in HTTP save requests. That header is in the httpOptions constant
          * defined in the HeroService.
-         *
-         * Using Observable<any> allows us to accept various types of responses from the server
-         * which might not strictly conform to the Hero model, including messages or status codes.
-         *
-         * By specifying 'body: any', we do not limit the HTTP body to Hero type, catering for
-         * scnarios where the server might return additional information that isn't part of the Hero model.
          */
         return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
             tap((_) => this.log(`updated hero id=${hero.id}`)),
