@@ -330,9 +330,12 @@ export class HeroService {
      *
      * - It calls HttpClient.post() instead of put()
      * - It expects the server to create an id for the new hero, which it returns in the Observable<Hero> to the caller.
-     * The creating of a id for the new hero happends automatically due to the getId() method of the in-memory-data
-     * service, executed when the POST request (adding a new hero) is send to the simulated server. The server responds
-     * with the new created hero, which has also the automaticly created id for it and was pushed to the heroes database.
+     * 
+     * It relies on the in-memory-data service's genId() method to automatically generate an
+     * id for a new hero, if the posted hero object doesn't have one. This id generation is
+     * triggered when a POST request is sent to the simulated server. The server then
+     * responds with the newly created hero object, now containing the automatically generated
+     * id, and adds it to the heroes collection.
      */
     addHero(hero: Hero): Observable<Hero> {
         return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
