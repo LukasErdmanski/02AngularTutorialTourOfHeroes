@@ -12,6 +12,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from './in-memory-data.service';
+import { HeroSearchComponent } from './hero-search/hero-search.component';
 
 /**
  * Angular needs to know how the pieces of your application fit together and what other files and libraries
@@ -27,7 +28,7 @@ import { InMemoryDataService } from './in-memory-data.service';
      * You didn't declare the HeroesComponent. Why did the application work?
      * It worked because the ng generate declared HeroesComponent in AppModule when it created that component.
      */
-    declarations: [AppComponent, HeroesComponent, HeroDetailComponent, MessageComponent, DashboardComponent],
+    declarations: [AppComponent, HeroesComponent, HeroDetailComponent, MessageComponent, DashboardComponent, HeroSearchComponent],
     // The imports array contains the list of external modules that the application needs.
     // HttpClient available everywhere in the application due to the import here.
     imports: [

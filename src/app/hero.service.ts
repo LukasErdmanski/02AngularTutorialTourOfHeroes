@@ -11,7 +11,7 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
-import { Observable, catchError, of, pipe, tap } from 'rxjs';
+import { Observable, catchError, map, of, pipe, tap } from 'rxjs';
 import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -112,6 +112,20 @@ export class HeroService {
      */
     constructor(private http: HttpClient, private messageService: MessageService) {}
 
+    // The old implementation in this tutorial with delivering mock heroes.
+    // getHeroes(): Observable<Hero[]> {
+    //     /**
+    //      * This tutorial simulates getting data from the server with the RxJS of() function
+    //      * of(HEROES) returns an Observable<Hero[]> that emits a single value, the array of mock heroes.
+    //      *
+    //      * https://rxjs.dev/api/index/function/of
+    //      */
+    //     const heroes: Observable<Hero[]> = of(HEROES);
+    //     // Send a message when the heroes are fetched.
+    //     this.messageService.add('HeroService: fetched heroes');
+    //     return heroes;
+    // }
+
     /**
      * The HeroService could get hero data from anywhere such as a web service, local storage, or a mock data source.
      *
@@ -181,61 +195,86 @@ export class HeroService {
         );
     }
 
-    // The old implementation in this tutorial with delivering mock heroes.
-    // getHeroes(): Observable<Hero[]> {
-    //     /**
-    //      * This tutorial simulates getting data from the server with the RxJS of() function
-    //      * of(HEROES) returns an Observable<Hero[]> that emits a single value, the array of mock heroes.
-    //      *
-    //      * https://rxjs.dev/api/index/function/of
-    //      */
-    //     const heroes: Observable<Hero[]> = of(HEROES);
-    //     // Send a message when the heroes are fetched.
-    //     this.messageService.add('HeroService: fetched heroes');
-    //     return heroes;
-    // }
-
     /**
-     * Handle Http operation that failed.
-     * Let the app continue.
+     * Although not elaborated here, the example of the getHeroNo404() method
+     * in the provided source code illustrates a pattern for using the map() function.
+     * This method is included as an additional example in the documentation,
+     * but is not used in the 'Tour of Heroes' tutorial itself.
      *
-     * @param operation - Name of the operation that failed.
-     * @param result - Optional value to return as the observable result, which can be T or undefined.
+     * Retrieves a hero by ID without throwing a 404 error if the hero is not found.
+     * The result is an Observable that either contains the found Hero object or `null`
+     * if no hero with the provided ID was found.
      *
-     * The `handleError` function can be shared by many service methods, making it a general
-     * utility for error handling. Rather than handling errors directly, it returns a function
-     * that is suited for use with the `catchError` operator. This function is configured with
-     * the name of the operation that failed and a safe return value.
+     * The generic Data type in the getHeroNo404 method allows the method to flexibly
+     * respond to the return type of the API request. That is, the method can work with
+     * different data structures that could be returned by the API. This is particularly
+     * useful when the structure of the API response is variable or when the method is
+     * to be reused in different contexts where the expected data type is not always a
+     * Hero object. By using Data as a generic type, type safety is maintained while
+     * adapting to various response structures is possible.
      *
-     * After reporting the error to the console, the handler constructs a friendly message and
-     * returns a safe value to ensure the application continues to run. If no `result` is provided,
-     * the value defaults to `undefined`, and the `as T` cast instructs TypeScript to treat this
-     * `undefined` as type `T`, which maintains the return type as `Observable<T>`.
+     * Using Data instead of a specific type like Hero gives developers the freedom to
+     * use the getHeroNo404 method in scenarios where the server might provide different
+     * types of responses. This can be the case when the response data structure is dynamic
+     * or when the same method should be used to process different data types that have
+     * similar behaviors.
      *
-     * Without the `as T` cast, if `result` is not provided, TypeScript would raise an error that
-     * `Observable<undefined>` is not assignable to `Observable<T>`. Casting with `as T` avoids
-     * this error by asserting that `result` (even if `undefined`) should be considered of type `T`
-     * for the `Observable`.
+     * This method calls an API endpoint that searches for a list of heroes using a
+     * query parameter search (`/?id=${id}`). If the ID matches, a list is returned that
+     * either contains no elements or exactly one element. This is different from the
+     * `getHero` method that retrieves a specific resource via a path parameter (`/${id}`)
+     * and, as expected, always returns exactly one Hero object or throws a 404 error if
+     * the ID does not exist.
      *
-     * Each service method returns a different kind of Observable result, so `handleError` accepts
-     * a type parameter to return the expected safe value type.
+     * The map function is used in this method to directly extract the Hero object from
+     * the list returned by the server. Since the API delivers an array of Hero objects when
+     * a matching hero is found, `map` accesses the first element of the array, which is
+     * the found Hero object. Should the list be empty, `undefined` is implicitly returned,
+     * which is indicated by the comment `// returns a {0|1} element array`.
      *
-     * @return A function that takes an error of any type and returns an `Observable` of type `T`.
-     *         This returned function is suitable as an argument for the `catchError` operator used
-     *         in RxJS observables, providing a way to handle errors and return a safe default value.
+     * @param id - The ID of the hero being sought.
+     * @returns An Observable that either delivers the found Hero object or `undefined`.
      */
-    private handleError<T>(operation = 'operation', result?: T): (error: any) => Observable<T> {
-        return (error: any): Observable<T> => {
-            // TODO: send the error to remote logging infrastructure
-            console.error(error); // log to console instead;
-
-            // TODO: better job of transforming error for user consumption
-            this.log(`${operation} failed: ${error.message}`);
-
-            // Let the app keep running by returning an empty result.
-            return of(result as T); // Cast `result` to `T` to maintain the Observable<T> type.
-        };
+    getHeroNo404<Data>(id: number): Observable<Hero> {
+        // Constructs the URL with a query string for the ID.
+        const url = `${this.heroesUrl}/?id=${id}`;
+        return (
+            this.http
+                // Executes the HTTP GET request and expects an array of Hero objects.
+                .get<Hero[]>(url)
+                .pipe(
+                    /**
+                     * Uses `map` to return the first element of the array, which is either the
+                     * Hero object or `undefined`, depending on the number of elements ({0|1}).
+                     */
+                    map((heroes) => heroes[0]),
+                    // Uses `tap` for logging the result without affecting the stream.
+                    tap((h) => {
+                        const outcome = h ? 'fetched' : 'did not find';
+                        // Logs the result of the operation.
+                        this.log(`${outcome} hero id=${id}`);
+                    }),
+                    // Catches and handles errors.
+                    catchError(this.handleError<Hero>(`getHero id=${id}`))
+                )
+        );
     }
+
+    // The old implementation in this tutorial with delivering the hero by id via the mock heroes.
+    // /**
+    //  * Like getHeroes(), getHero() has an asynchronous signature. It returns a mock hero as an Observable,
+    //  * using the RxJS of() function.
+    //  *
+    //  * You can rewrite getHero() as a real Http request without having to change the HeroDetailComponent that calls it.
+    //  * */
+    // getHero(id: Number): Observable<Hero> {
+    //     // For now, assume that a hero with the specified `id` always exists.
+    //     // Error handling will be added in the next step of the tutorial.
+    //     const hero = HEROES.find((h) => h.id === id)!;
+    //     // The backtick ( ` ) characters define a JavaScript template literal for embedding the id.
+    //     this.messageService.add(`HeroService: fetched hero id=${id}}`);
+    //     return of(hero);
+    // }
 
     /**
      * GET hero by id. Will 404 if id not found
@@ -255,6 +294,60 @@ export class HeroService {
             tap((_) => this.log(`fetche hero id`)),
             // The optonal parameter result of the handleError() method is undefined in this case.
             catchError(this.handleError<Hero>(`getHero id=${id}`))
+        );
+    }
+
+    /**
+     * The method returns immediately with an empty array if there is no search term. The rest of it closely resembles
+     * getHeroes(), the only significant difference being the URL, which includes a query string with the search term.
+     */
+    searchHeroes(term: string): Observable<Hero[]> {
+        if (!term.trim()) {
+            // if not search term, return emtpry hero array.
+            return of([]);
+        }
+        return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
+            tap((x) => (x.length ? this.log(`found heroes matchin "${term}"`) : this.log(`no heroes matching "${term}"`))),
+            catchError(this.handleError<Hero[]>('searchHeroes', []))
+        );
+    }
+
+    /**
+     * POST: add a new hero to the server
+     *
+     * addHero() differs from updateHero() in two ways:
+     *
+     * - It calls HttpClient.post() instead of put()
+     * - It expects the server to create an id for the new hero, which it returns in the Observable<Hero> to the caller.
+     *
+     * It relies on the in-memory-data service's genId() method to automatically generate an
+     * id for a new hero, if the posted hero object doesn't have one. This id generation is
+     * triggered when a POST request is sent to the simulated server. The server then
+     * responds with the newly created hero object, now containing the automatically generated
+     * id, and adds it to the heroes collection.
+     */
+    addHero(hero: Hero): Observable<Hero> {
+        return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
+            tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
+            catchError(this.handleError<Hero>('addHero'))
+        );
+    }
+
+    /**
+     * DELETE: delete the hero from the server
+     *
+     * Notice the following key points:
+     * - deleteHero() calls HttpClient.delete()
+     * - The URL is the heroes resource URL plus the id of the hero to delete
+     * - You don't send data as you did with put() and post()
+     * -You still send the httpOptions
+     */
+    deleteHero(id: number): Observable<Hero> {
+        const url = `${this.heroesUrl}/${id}`;
+
+        return this.http.delete<Hero>(url, this.httpOptions).pipe(
+            tap((_) => this.log(`deleted hero id=${id}`)),
+            catchError(this.handleError<Hero>('deleteHero'))
         );
     }
 
@@ -324,59 +417,46 @@ export class HeroService {
     }
 
     /**
-     * POST: add a new hero to the server
+     * Handle Http operation that failed.
+     * Let the app continue.
      *
-     * addHero() differs from updateHero() in two ways:
+     * @param operation - Name of the operation that failed.
+     * @param result - Optional value to return as the observable result, which can be T or undefined.
      *
-     * - It calls HttpClient.post() instead of put()
-     * - It expects the server to create an id for the new hero, which it returns in the Observable<Hero> to the caller.
+     * The `handleError` function can be shared by many service methods, making it a general
+     * utility for error handling. Rather than handling errors directly, it returns a function
+     * that is suited for use with the `catchError` operator. This function is configured with
+     * the name of the operation that failed and a safe return value.
      *
-     * It relies on the in-memory-data service's genId() method to automatically generate an
-     * id for a new hero, if the posted hero object doesn't have one. This id generation is
-     * triggered when a POST request is sent to the simulated server. The server then
-     * responds with the newly created hero object, now containing the automatically generated
-     * id, and adds it to the heroes collection.
+     * After reporting the error to the console, the handler constructs a friendly message and
+     * returns a safe value to ensure the application continues to run. If no `result` is provided,
+     * the value defaults to `undefined`, and the `as T` cast instructs TypeScript to treat this
+     * `undefined` as type `T`, which maintains the return type as `Observable<T>`.
+     *
+     * Without the `as T` cast, if `result` is not provided, TypeScript would raise an error that
+     * `Observable<undefined>` is not assignable to `Observable<T>`. Casting with `as T` avoids
+     * this error by asserting that `result` (even if `undefined`) should be considered of type `T`
+     * for the `Observable`.
+     *
+     * Each service method returns a different kind of Observable result, so `handleError` accepts
+     * a type parameter to return the expected safe value type.
+     *
+     * @return A function that takes an error of any type and returns an `Observable` of type `T`.
+     *         This returned function is suitable as an argument for the `catchError` operator used
+     *         in RxJS observables, providing a way to handle errors and return a safe default value.
      */
-    addHero(hero: Hero): Observable<Hero> {
-        return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
-            tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
-            catchError(this.handleError<Hero>('addHero'))
-        );
+    private handleError<T>(operation = 'operation', result?: T): (error: any) => Observable<T> {
+        return (error: any): Observable<T> => {
+            // TODO: send the error to remote logging infrastructure
+            console.error(error); // log to console instead;
+
+            // TODO: better job of transforming error for user consumption
+            this.log(`${operation} failed: ${error.message}`);
+
+            // Let the app keep running by returning an empty result.
+            return of(result as T); // Cast `result` to `T` to maintain the Observable<T> type.
+        };
     }
-
-    /**
-     * DELETE: delete the hero from the server
-     *
-     * Notice the following key points:
-     * - deleteHero() calls HttpClient.delete()
-     * - The URL is the heroes resource URL plus the id of the hero to delete
-     * - You don't send data as you did with put() and post()
-     * -You still send the httpOptions
-     */
-    deleteHero(id: number): Observable<Hero> {
-        const url = `${this.heroesUrl}/${id}`;
-
-        return this.http.delete<Hero>(url, this.httpOptions).pipe(
-            tap((_) => this.log(`deleted hero id=${id}`)),
-            catchError(this.handleError<Hero>('deleteHero'))
-        );
-    }
-
-    // The old implementation in this tutorial with delivering the hero by id via the mock heroes.
-    // /**
-    //  * Like getHeroes(), getHero() has an asynchronous signature. It returns a mock hero as an Observable,
-    //  * using the RxJS of() function.
-    //  *
-    //  * You can rewrite getHero() as a real Http request without having to change the HeroDetailComponent that calls it.
-    //  * */
-    // getHero(id: Number): Observable<Hero> {
-    //     // For now, assume that a hero with the specified `id` always exists.
-    //     // Error handling will be added in the next step of the tutorial.
-    //     const hero = HEROES.find((h) => h.id === id)!;
-    //     // The backtick ( ` ) characters define a JavaScript template literal for embedding the id.
-    //     this.messageService.add(`HeroService: fetched hero id=${id}}`);
-    //     return of(hero);
-    // }
 
     /** Log a HeroService message with the MessageService */
     private log(message: string) {
