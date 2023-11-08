@@ -291,7 +291,7 @@ export class HeroService {
     getHero(id: number): Observable<Hero> {
         const url = `${this.heroesUrl}/${id}}`;
         return this.http.get<Hero>(url).pipe(
-            tap((_) => this.log(`fetche hero id`)),
+            tap(_ => this.log(`fetched hero id=${id}`)),
             // The optonal parameter result of the handleError() method is undefined in this case.
             catchError(this.handleError<Hero>(`getHero id=${id}`))
         );
